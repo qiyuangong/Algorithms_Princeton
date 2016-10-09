@@ -15,27 +15,42 @@ public class FastCollinearPoints {
         if (points == null)
             throw new java.lang.NullPointerException();
         // finds all line segments containing 4 points
-        collinear = new LineSegment[points.length * points.length];
-        Point[] temp = new Point[points.length];
+        Point[] ptemp = points.clone();
+        collinear = new LineSegment[ptemp.length * ptemp.length];
+        Point[] temp = new Point[ptemp.length];
         n = 0;
-        Arrays.sort(points);
-        for (int i = 0; i < points.length - 4; i++){
-            Comparator<Point> comparator = points[i].slopeOrder();
-            for (int j = i + 1; j < points.length; j++)
-                temp[j] = points[j];
-            Arrays.sort(temp, i + 1, points.length, comparator);
+        Arrays.sort(ptemp);
+        for (int i = 0; i < ptemp.length - 1; i++) {
+            if (ptemp[i] == null || ptemp[i].compareTo(ptemp[i + 1]) == 0)
+                throw new java.lang.IllegalArgumentException();
+        }
+        for (int i = 0; i < ptemp.length - 3; i++) {
+            Comparator<Point> comparator = ptemp[i].slopeOrder();
+            for (int j = i + 1; j < ptemp.length; j++)
+                temp[j] = ptemp[j];
+            Arrays.sort(temp, i + 1, ptemp.length, comparator);
+            // System.out.printf("i=%d\n", i);
+            // for (int j = i + 1; j < ptemp.length; j++)
+                // System.out.printf("%f,", ptemp[i].slopeTo(temp[j]));
+            // System.out.println();
             int pos = i + 1;
-            int last = i + 1;
-            double currS = points[i].slopeTo(temp[last]);
-            while (pos < points.length){
+            int last;
+            double currS = ptemp[i].slopeTo(temp[pos]);
+            while (pos < ptemp.length) {
                 double os = currS;
-                last = pos++;
-                while (pos < points.length && currS == os){
-                    currS = points[i].slopeTo(temp[pos++]);
+                last = pos;
+                while (pos < ptemp.length) {
+                    if (pos != last) {
+                        currS = ptemp[i].slopeTo(temp[pos]);
+                        if (currS != os)
+                            break;
+                    }
+                    pos++;
                 }
-                if (pos - last >= 3){
+                if (pos - last >= 3) {
+                    // System.out.printf("last=%d,pos=%d\n", last, pos);
                     Arrays.sort(temp, last, pos);
-                    collinear[n++] = new LineSegment(points[i], temp[pos - 1]);
+                    collinear[n++] = new LineSegment(ptemp[i], temp[pos - 1]);
                 }
             }
         }

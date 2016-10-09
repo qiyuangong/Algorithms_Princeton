@@ -103,7 +103,7 @@ public class Point implements Comparable<Point> {
     }
 
     private class SlopeOrder implements Comparator<Point> {
-        public int compare(Point p1, Point p2){
+        public int compare(Point p1, Point p2) {
             double s1 = slopeTo(p1);
             double s2 = slopeTo(p2);
             if (s1 < s2)

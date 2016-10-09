@@ -12,20 +12,25 @@ public class BruteCollinearPoints {
         if (points == null)
             throw new java.lang.NullPointerException();
         // finds all line segments containing 4 points
-        collinear = new LineSegment[points.length * points.length];
+        Point[] ptemp = points.clone();
+        collinear = new LineSegment[ptemp.length * ptemp.length];
         n = 0;
-        Arrays.sort(points);
-        for (int i = 0; i < points.length; i++){
-            for (int j = i + 1; j < points.length; j++){
-                double s1 = points[i].slopeTo(points[j]);
-                for (int k = j + 1; k < points.length; k++){
-                    double s2 = points[i].slopeTo(points[k]);
+        Arrays.sort(ptemp);
+        for (int i = 0; i < ptemp.length - 1; i++) {
+            if (ptemp[i] == null || ptemp[i].compareTo(ptemp[i + 1]) == 0)
+                throw new java.lang.IllegalArgumentException();
+        }
+        for (int i = 0; i < ptemp.length; i++) {
+            for (int j = i + 1; j < ptemp.length; j++) {
+                double s1 = ptemp[i].slopeTo(ptemp[j]);
+                for (int k = j + 1; k < ptemp.length; k++) {
+                    double s2 = ptemp[i].slopeTo(ptemp[k]);
                     if (s1 != s2)
                         continue;
-                    for (int l = k + 1; l < points.length; l++){
-                        double s3 = points[i].slopeTo(points[l]);
+                    for (int l = k + 1; l < ptemp.length; l++) {
+                        double s3 = ptemp[i].slopeTo(ptemp[l]);
                         if (s1 == s3)
-                            collinear[n++] = new LineSegment(points[i], points[l]);
+                            collinear[n++] = new LineSegment(ptemp[i], ptemp[l]);
                     }
                 }
             }
